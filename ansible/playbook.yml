@@ -1,4 +1,4 @@
-- hosts: "{{ HOST_NAME }}"
+- hosts: 175.41.242.116
   become: True
   become_user: ec2-user
 
