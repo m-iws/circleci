@@ -1,4 +1,4 @@
-- hosts: {{ HOST_NAME }}
+- hosts: "{{ HOST_NAME }}"
   become: True
   become_user: ec2-user
 
