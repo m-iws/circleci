@@ -5,6 +5,8 @@ describe package('git') do
   it { should be_installed }
 end      
 
-def os_platform_amazon?
-  Specinfra.backend.run_command('uname -r').stdout.include?("amzn1")
-end
+if os_platform_amazon?
+  %w{aws-cli s3cmd}.each do |pkg|
+    describe package(pkg) do
+      it { should be_installed }
+    end
