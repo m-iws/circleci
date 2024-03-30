@@ -40,7 +40,7 @@ jobs:
           at: .
       - add_ssh_keys:
           fingerprints:
-            - "${KEY_FINGERPRINT}"
+            - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
       - ansible/install:
           version: 2.10.7
       - ansible/playbook:
