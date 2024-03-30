@@ -1,0 +1,32 @@
+---
+#インストール済みの全パッケージを最新にアップデート
+- name: yum Upgrade all packages
+  become_user: root
+  yum: 
+    name: "*"
+    state: latest
+
+#Rubyのインストールに必要なパッケージのインストール
+- name: yum install package
+  become_user: root
+  yum:
+    state: present
+    name: 
+      - git
+      - make
+      - gcc-c++
+      - patch
+      - curl
+      - libcurl-devel
+      - openssl-devel
+      - libyaml-devel
+      - libffi-devel
+      - libicu-devel
+      - libxml2
+      - libxslt
+      - libxml2-devel
+      - libxslt-devel
+      - zlib-devel
+      - readline-devel
+      - ImageMagick
+      - ImageMagick-devel

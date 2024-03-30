@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture13_rds_setting
+
+Parameters: 
+  NameBase:
+    Description: this is base name.
+    Type: String
+    Default: lecture13
+  StackNameVPC:
+    Description: vpc stack name.
+    Type: String
+    Default: test01
+  StackNameEC2:
+    Description: ec2 stack name.
+    Type: String
+    Default: test02
+  DBMasterUserName:
+    Type: String
+    Default: admin
+  AZ1:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: ap-northeast-1a
+  AZ2:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: ap-northeast-1c
+
+Resources: 
+# ------------------------------------------------------------#
+#  DBSubnetGroup
+# ------------------------------------------------------------#
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub ${NameBase}-subg-rds
+      DBSubnetGroupDescription: !Sub ${NameBase}-subg-rds created
+      SubnetIds: 
+        - Fn::ImportValue: !Sub ${StackNameVPC}-PrivateSubnet1-${AZ1}-ID
+        - Fn::ImportValue: !Sub ${StackNameVPC}-PrivateSubnet2-${AZ2}-ID
+
+# ------------------------------------------------------------#
+#  SecurityGroup
+# ------------------------------------------------------------#
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${NameBase}-sg-rds
+      GroupDescription: !Sub ${NameBase}-sg-rds created 
+      VpcId:
+        Fn::ImportValue: !Sub ${StackNameVPC}-VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId:
+            Fn::ImportValue: !Sub ${StackNameEC2}-sg-ec2-ID
+
+# ------------------------------------------------------------#
+#  RDS
+# ------------------------------------------------------------#
+  RDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref AWS::Region 
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      DBInstanceIdentifier: !Sub ${NameBase}-rds
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      Engine: MySQL
+      EngineVersion: 8.0.35
+      MasterUsername: !Ref DBMasterUserName
+      MasterUserPassword: '{{resolve:secretsmanager:RDSpassword:SecretString:password}}'
+      MultiAZ: false
+      PubliclyAccessible: false
+      StorageEncrypted: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      BackupRetentionPeriod: 0
+
+Outputs:
+  RDSendpoint:
+    Value: !GetAtt RDS.Endpoint.Address
+    Export: 
+      Name: !Sub ${AWS::StackName}-RDSendpoint-Address
