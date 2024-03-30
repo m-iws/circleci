@@ -39,16 +39,15 @@ jobs:
     - add_ssh_keys:
         fingerprints:
           - "MD5:e1:d1:94:a1:71:a3:41:de:d0:f2:4c:c7:66:8d:c8:45"
-      - run:
-          name: Update SSH config
-          command: |
+    - run:
+        name: Update SSH config
+        command: |
             echo 'Host *' >> ~/.ssh/config
             echo '  StrictHostKeyChecking no' >> ~/.ssh/config
             echo '  UserKnownHostsFile /dev/null' >> ~/.ssh/config
             chmod 600 ~/.ssh/config
     - ansible/install:
         version: 2.10.7
-    - run: ssh -o StrictHostKeyChecking=no ec2-user@175.41.242.116 'exit'  
     - ansible/playbook: 
         playbook: ansible/playbook.yml
         playbook-options: "-i ansible/inventory"
