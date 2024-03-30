@@ -38,7 +38,7 @@ jobs:
     - checkout
     - add_ssh_keys:
         fingerprints:
-          - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
+          - "MD5:e1:d1:94:a1:71:a3:41:de:d0:f2:4c:c7:66:8d:c8:45"
       - run:
           name: Update SSH config
           command: |
