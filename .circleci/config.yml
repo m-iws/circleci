@@ -40,7 +40,7 @@ jobs:
         keyfingerprints:
         - "${KEY_FINGERPRINT}"
     - ansible/install:
-        version: 2.10.17   
+        version: 2.10.7   
     - run: ssh -o StrictHostKeyChecking=no ec2-user@${HOST_NAME} 'exit'    
     - ansible/playbook: 
         playbook: ansible/playbook.yml
