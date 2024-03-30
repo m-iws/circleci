@@ -38,7 +38,12 @@ jobs:
     - checkout
     - add_ssh_keys:
         fingerprints:
-        - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
+          - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
+    - run:
+        name: Add StrictHostKeyChecking no to ~/.ssh/config
+        command: |
+            echo -e "Host *\n  StrictHostKeyChecking no" >> ~/.ssh/config
+            cat ~/.ssh/config
     - ansible/install:
         version: 2.10.7
     - run: ssh -o StrictHostKeyChecking=no ec2-user@175.41.242.116 'exit'  
