@@ -50,7 +50,7 @@
   ignore_errors: yes
 
 - name: ruby install
-  shell: bash -lc "rbenv install -v {{ ruby_version }}"
+  shell: bash -lc "rbenv install {{ ruby_version }}"
   when: ruby_exists is failed
 
 - name: rbenv rehash

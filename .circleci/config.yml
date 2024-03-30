@@ -38,10 +38,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-
-      - run:
-          name: set inventory file
-          command: sed -i "1i ansible_dev_target ansible_host=${HOST_NAME} ansible_connection=ssh ansible_user=ec2-user" ansible/inventory
       - add_ssh_keys:
           fingerprints:
             - "${KEY_FINGERPRINT}"
