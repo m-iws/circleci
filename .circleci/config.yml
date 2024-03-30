@@ -41,7 +41,13 @@ jobs:
         - "${KEY_FINGERPRINT}"
     - ansible/install:
         version: 2.10.7   
-    - run: ssh -o StrictHostKeyChecking=no ec2-user@${HOST_NAME} 'exit'    
+      - run:
+          name: Update SSH config
+          command: |
+            echo 'Host *' >> ~/.ssh/config
+            echo '  StrictHostKeyChecking no' >> ~/.ssh/config
+            echo '  UserKnownHostsFile /dev/null' >> ~/.ssh/config
+            chmod 600 ~/.ssh/config    
     - ansible/playbook: 
         playbook: ansible/playbook.yml
         playbook-options: "-i ansible/inventory"
