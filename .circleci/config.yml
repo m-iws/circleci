@@ -38,9 +38,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
-      - add_ssh_keys:
-          fingerprints:
-            - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
       - ansible/install:
           version: 2.10.7
       - run: ssh -o StrictHostKeyChecking=no ec2-user@${HOST_NAME} 'exit'  
