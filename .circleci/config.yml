@@ -41,7 +41,7 @@ jobs:
         - "${KEY_FINGERPRINT}"
     - ansible/install:
         version: 2.10.7   
-      - run:
+    - run:
           name: Update SSH config
           command: |
             echo 'Host *' >> ~/.ssh/config
