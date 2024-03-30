@@ -5,8 +5,6 @@ describe package('git') do
   it { should be_installed }
 end      
 
-if os_platform_amazon?
-  %w{aws-cli s3cmd}.each do |pkg|
-    describe package(pkg) do
-      it { should be_installed }
-    end
+describe package('nginx') do
+  it { should be_installed }
+end
