@@ -33,17 +33,18 @@ jobs:
             aws cloudformation deploy --template-file cloudformation/02_ec2.yml --stack-name test02 --capabilities CAPABILITY_IAM
 
   execute-ansible:
-    executor: ansible/default
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - ansible/install:
-          version: 2.10.7
-      - run: ssh -o StrictHostKeyChecking=no ec2-user@${HOST_NAME} 'exit'  
-      - ansible/playbook:
-          playbook: ansible/playbook.yml
-          playbook-options: '-i ansible/inventory'
+    executor: ansible/default        
+    steps: 
+    - checkout
+    - add_ssh_keys:
+        keyfingerprints:
+        - "${KEY_FINGERPRINT}"
+    - ansible/install:
+        version: 2.10.17   
+    - run: ssh -o StrictHostKeyChecking=no ec2-user@${HOST_NAME} 'exit'    
+    - ansible/playbook: 
+        playbook: ansible/playbook.yml
+        playbook-options: "-i ansible/inventory"
   execute-serverspec:
     executor: ruby/default
     steps:
