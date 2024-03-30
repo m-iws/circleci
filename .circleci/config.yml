@@ -37,20 +37,14 @@ jobs:
     steps: 
     - checkout
     - add_ssh_keys:
-        keyfingerprints:
-        - "${KEY_FINGERPRINT}"
+        fingerprints:
+        - "SHA256:4iici/utjJKzbJbNZMYse6zRgWOMSU8ZNIZ61SOZk2o"
     - ansible/install:
-        version: 2.10.7   
-    - run:
-          name: Update SSH config
-          command: |
-            echo 'Host *' >> ~/.ssh/config
-            echo '  StrictHostKeyChecking no' >> ~/.ssh/config
-            echo '  UserKnownHostsFile /dev/null' >> ~/.ssh/config
-            chmod 600 ~/.ssh/config    
+        version: 2.10.7    
     - ansible/playbook: 
         playbook: ansible/playbook.yml
         playbook-options: "-i ansible/inventory"
+  
   execute-serverspec:
     executor: ruby/default
     steps:
