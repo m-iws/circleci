@@ -41,7 +41,7 @@ jobs:
         - "SHA256:PfDK0jl9HuUmvtExnZy6jeNvWkSra4DUmgfvrkiYlY0"
     - ansible/install:
         version: 2.10.7
-    - run: ssh -o ControlMaster=auto -o ControlPersist=60s -o host_key_checking = False -o UserKnownHostsFile=/dev/null ec2-user@175.41.242.116 'exit'    
+    - run: ssh -o ControlMaster=auto -o ControlPersist=60s -o host_key_checking= False -o UserKnownHostsFile=/dev/null ec2-user@175.41.242.116 'exit'    
     - ansible/playbook: 
         playbook: ansible/playbook.yml
         playbook-options: "-i ansible/inventory"
