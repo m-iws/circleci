@@ -15,49 +15,58 @@
   when: rbenv_exists is failed
 
 - name: install ruby-build
+  become_user: root
   git:
     repo: https://github.com/sstephenson/ruby-build.git
     dest: /home/ec2-user/.rbenv/plugins/ruby-build
 
 - name: path for rbenv01
+  become_user: root
   lineinfile: 
     path: /home/ec2-user/.bash_profile
     line: '"# For rbenv"'
   when: rbenv_exists is failed
 
 - name: path for rbenv02
+  become_user: root
   lineinfile: 
     path: /home/ec2-user/.bash_profile
     line: 'export PATH="$HOME/.rbenv/bin:$PATH"'
   when: rbenv_exists is failed
 
 - name: eval rbenv init
+  become_user: root
   lineinfile: 
     path: /home/ec2-user/.bash_profile
     line: 'eval "$(~/.rbenv/bin/rbenv init -)"'
   when: rbenv_exists is failed
 
 - name: reflect .bash_profile
+  become_user: root
   shell: bash -lc "source ~/.bash_profile"
   when: rbenv_exists is failed
 # -----------------------------------------------------
 # ruby
 # -----------------------------------------------------
 - name: Check ruby exists
+  become_user: root
   shell: bash -lc "rbenv versions | grep {{ ruby_version }}"
   register: ruby_exists
   changed_when: no
   ignore_errors: yes
 
 - name: ruby install
+  become_user: root
   shell: bash -lc "rbenv install {{ ruby_version }}"
   when: ruby_exists is failed
 
 - name: rbenv rehash
+  become_user: root
   shell: bash -lc "rbenv rehash"
   when: ruby_exists is failed
 
 - name: set ruby version
+  become_user: root
   shell: bash -lc "rbenv global {{ ruby_version }}"
   when: ruby_exists is failed
 
@@ -65,12 +74,14 @@
 # rails
 # -----------------------------------------------------
 - name: check rails install
+  become_user: root
   shell: bash -lc "gem list -e rails | grep {{ rails_version }}"
   register: rails_exists
   changed_when: no
   ignore_errors: yes
 
 - name: rails install
+  become_user: root
   gem: 
     name: rails
     version: "{{ rails_version }}"
