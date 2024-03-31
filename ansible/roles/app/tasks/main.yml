@@ -1,5 +1,5 @@
 ---
-インストール済みの全パッケージを最新にアップデート
+#インストール済みの全パッケージを最新にアップデート
 - name: yum Upgrade all packages
   become_user: root
   yum: 
