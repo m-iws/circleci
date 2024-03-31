@@ -6,7 +6,8 @@ listen_port = 80
 
 #追加テスト01（rubyが指定のバージョンでインストールされているか確認）
 describe command('ruby -v') do
-  its(:stdout) { should match /ruby 3\.2\.3/ }
+  let(:path) { '/home/ec2-user/.rbenv/shims:$PATH' }
+  its(:stdout) { should match /ruby 3.1.2/ }
 end
 
 #Nginxがインストールされているか確認
