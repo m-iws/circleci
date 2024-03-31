@@ -66,6 +66,12 @@
   template:
     src: storage.yml.j2
     dest: "{{ app_dir }}/config/storage.yml"
+
+- name: create database.yml
+  become_user: root
+  template:
+    src: database.yml.j2
+    dest: "{{ app_dir }}/config/database.yml"
 # -----------------------------------------------------
 # system start
 # -----------------------------------------------------

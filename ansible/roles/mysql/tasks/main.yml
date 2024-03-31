@@ -24,17 +24,4 @@
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
-- name: install mysql-community-devel and server
-  become_user: root
-  yum:
-    name:
-      - mysql-community-devel
-      - mysql-community-server
-    state: present
-
-- name: create database.yml
-  become_user: root
-  template:
-    src: database.yml.j2
-    dest: "{{ app_dir }}/config/database.yml"
 
