@@ -28,9 +28,8 @@
 
 - name: bundle install
   shell: bash -lc "bundle install"
-  when: app_clone.changed
   args: 
-    chdir: "{{ app_dir }}"
+    chdir: "/var/www/raisetech-live8-sample-app"
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
@@ -58,6 +57,13 @@
     src: database.yml.j2
     dest: "{{ app_dir }}/config/database.yml"
 
+- name: edit puma.service
+  become: yes
+  template:
+    src: puma.service.j2
+    dest: /etc/systemed/system/puma.service
+    recurse: yes
+
 - name: bin/setup
   shell: |
     bash -lc "bin/setup"
@@ -72,23 +78,10 @@
 # -----------------------------------------------------
 # system start
 # -----------------------------------------------------
-- name: start nginx
-  become: yes
-  service:
-    name: nginx
-    state: started
-  register: nginx_started
 
-- name: start puma
-  become: yes
-  service:
-    name: puma
-    state: started
-  when: nginx_started.changed
-
-- name: edit puma.service
-  become: yes
-  template:
-    src: puma.service.j2
-    dest: /etc/systemed/system/puma.service
-    recurse: yes
+- name: start server
+  shell: |
+    sudo systemctl restart puma
+    sudo systemctl restart nginx
+  args:
+    chdir: "{{ app_dir }}"
