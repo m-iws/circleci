@@ -6,19 +6,19 @@
   ignore_errors: yes
 
 - name: nginx install
-  become_user: root
+  become: yes
   shell: bash -lc "amazon-linux-extras install -y nginx1"
   when: nginx_exists is failed
 
 - name: create nginc.conf
-  become_user: root
+  become: yes
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/conf.d/nginx.conf
   when: nginx_exists is failed
 
 - name: nginx permission
-  become_user: root
+  become: yes
   file: 
     path: /var/lib
     state: directory
