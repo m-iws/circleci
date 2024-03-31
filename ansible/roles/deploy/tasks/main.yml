@@ -3,6 +3,7 @@
 # app clone
 # -----------------------------------------------------
 - name: Create directory
+  become_user: root
   ansible.builtin.file:
     path: /var/www
     state: directory
