@@ -11,4 +11,6 @@
     - { role: node, tags: node }
     - { role: yarn, tags: yarn }
     - { role: bundler, tags: bundler }
+    - { role: mysql, tags: mysql }
     - { role: nginx, tags: nginx }
+    - { role: deploy, tags: deploy }
