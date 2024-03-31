@@ -22,11 +22,7 @@
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
-- name: edit puma.service
-  become_user: root
-  template:
-    src: puma.service.j2
-    dest: /etc/systemed/system/puma.service
+
 
 - name: edit puma.rb
   become_user: root
@@ -81,3 +77,9 @@
     state: started
   when: nginx_started.changed
 
+- name: edit puma.service
+  become_user: root
+  template:
+    src: puma.service.j2
+    dest: /etc/systemed/system/puma.service
+    recurse: yes
