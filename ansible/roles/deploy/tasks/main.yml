@@ -19,26 +19,6 @@
     recurse: yes
   when: app_clone.changed
 
-- name: bundle install
-  become_user: root
-  shell: bash -lc "bundle install"
-  args:
-    chdir: "{{ app_dir }}"
-
-
-- name: bin/setup
-  become_user: root
-  shell: |
-    bash -lc "bin/setup"
-  args: 
-    chdir: "{{ app_dir }}"
-
-- name: asset precompile
-  become_user: root
-  shell: |
-    bash -lc "rails assets:precompile"
-  args: 
-    chdir: "{{ app_dir }}"
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
@@ -71,6 +51,19 @@
   template:
     src: database.yml.j2
     dest: "{{ app_dir }}/config/database.yml"
+
+- name: bin/setup
+  shell: |
+    bash -lc "bin/setup"
+  args: 
+    chdir: "{{ app_dir }}"
+  when: mysql_installed.changed
+
+- name: asset precompile
+  shell: |
+    bash -lc "rails assets:precompile"
+  args: 
+    chdir: "{{ app_dir }}"
 # -----------------------------------------------------
 # system start
 # -----------------------------------------------------
@@ -87,3 +80,4 @@
     name: puma
     state: started
   when: nginx_started.changed
+
