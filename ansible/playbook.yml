@@ -1,7 +1,6 @@
-- hosts:
-    - web-server
-  become: True
-  become_user: ec2-user
+- hosts: 175.41.242.116
+  become: yes
+  remote_user: ec2-user
 
   vars: 
     app_dir: /var/www/raisetech-live8-sample-app
