@@ -61,7 +61,7 @@
   become: yes
   template:
     src: puma.service.j2
-    dest: /etc/systemed/system/puma.service
+    dest: /etc/systemd/system/puma.service
     recurse: yes
 
 - name: bin/setup
