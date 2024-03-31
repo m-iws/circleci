@@ -19,13 +19,7 @@
     repo: https://github.com/sstephenson/ruby-build.git
     dest: /home/ec2-user/.rbenv/plugins/ruby-build
 
-- name: path for rbenv01
-  lineinfile: 
-    path: /home/ec2-user/.bash_profile
-    line: '"# For rbenv"'
-  when: rbenv_exists is failed
-
-- name: path for rbenv02
+- name: path for rbenv
   lineinfile: 
     path: /home/ec2-user/.bash_profile
     line: 'export PATH="$HOME/.rbenv/bin:$PATH"'
