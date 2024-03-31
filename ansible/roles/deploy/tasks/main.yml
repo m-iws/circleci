@@ -27,7 +27,7 @@
   when: app_clone.changed
 
 - name: bundle install
-  shell: bash -lc "sudo {{ app_dir }} bundle install"
+  shell: bash -lc "bundle install"
   when: app_clone.changed
   args: 
     chdir: "{{ app_dir }}"
