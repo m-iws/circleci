@@ -2,17 +2,19 @@
 # -----------------------------------------------------
 # app clone
 # -----------------------------------------------------
-- name: Clone sample-app
+- name: directory check
+  stat:
+    path: "{{ app_dir }}"
+  register: app_dir_check
+
+
+- name: clone sample-app
   ansible.builtin.git:
     repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
     dest: "{{ app_dir }}"
     force: yes
   register: app_clone
-
-- name: bundle install
-  shell: bash -lc "bundle install"
-  args:
-    chdir: "{{ app_dir }}"
+  when: app_dir_check.stat.exists == false
 
 - name: change app permission
   become_user: root
@@ -20,20 +22,24 @@
     path: "{{ app_dir }}"
     state: directory
     owner: ec2-user
+    mode: "775"
     recurse: yes
-  when: app_clone.changed
+  when: app_dir_check.changed
 
+- name: bundle install
+  become_user: root
+  shell: bash -lc "bundle install"
+  when: app_dir_check.stat.exists == false
+  
 - name: bin/setup
   shell: |
     bash -lc "bin/setup"
-  args: 
-    chdir: "{{ app_dir }}"
+  when: app_dir_check.stat.exists == false
 
 - name: asset precompile
   shell: |
     bash -lc "rails assets:precompile"
-  args: 
-    chdir: "{{ app_dir }}"
+  when: app_dir_check.stat.exists == false
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
@@ -54,12 +60,6 @@
   template:
     src: development.rb.j2
     dest: "{{ app_dir }}/config/environments/development.rb"
-
-- name: edit database.yml
-  become_user: root
-  template:
-    src: database.yml.j2
-    dest: "{{ app_dir }}/config/database.yml"
 
 - name: edit storage.yml
   become_user: root
