@@ -1,8 +1,8 @@
 ---
 - name: remove mariadb
-  become: yes
+  become_user: root
   yum:
-    name: mariadb* 
+    name: mariadb-server
     state: absent
 
 - name: remove mysql-server
