@@ -31,9 +31,9 @@ jobs:
             set -x
             aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test01
             aws cloudformation deploy --template-file cloudformation/02_ec2.yml --stack-name test02 --capabilities CAPABILITY_IAM
-            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test03
-            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test04
-            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test05
+            aws cloudformation deploy --template-file cloudformation/03_rds.yml --stack-name test03
+            aws cloudformation deploy --template-file cloudformation/04_elb.yml --stack-name test04
+            aws cloudformation deploy --template-file cloudformation/05_s3.yml --stack-name test05
       - run: 
           name: set ELB_DNS_NAME
           command: |

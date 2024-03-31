@@ -34,8 +34,6 @@
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
-
-
 - name: edit puma.rb
   become: yes
   template:
@@ -65,7 +63,6 @@
     bash -lc "bin/setup"
   args: 
     chdir: "{{ app_dir }}"
-  when: mysql_installed.changed
 
 - name: asset precompile
   shell: |
