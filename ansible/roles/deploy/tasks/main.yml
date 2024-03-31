@@ -3,7 +3,7 @@
 # app clone
 # -----------------------------------------------------
 - name: Create directory
-  become_user: root
+  become: yes
   ansible.builtin.file:
     path: /var/www
     state: directory
@@ -11,7 +11,6 @@
     owner: ec2-user
 
 - name: Clone sample-app
-  become_user: root
   ansible.builtin.git:
     repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
     dest: "{{ app_dir }}"
@@ -19,7 +18,7 @@
   register: app_clone
 
 - name: change app permission
-  become_user: root
+  become: yes
   file:
     path: "{{ app_dir }}"
     state: directory
@@ -28,7 +27,6 @@
   when: app_clone.changed
 
 - name: bundle install
-  become_user: root
   shell: bash -lc "sudo {{ app_dir }} bundle install"
   when: app_clone.changed
   args: 
@@ -39,25 +37,25 @@
 
 
 - name: edit puma.rb
-  become_user: root
+  become: yes
   template:
     src: puma.rb.j2
     dest: "{{ app_dir }}/config/puma.rb"
 
 - name: edit development.rb
-  become_user: root
+  become: yes
   template:
     src: development.rb.j2
     dest: "{{ app_dir }}/config/environments/development.rb"
 
 - name: edit storage.yml
-  become_user: root
+  become: yes
   template:
     src: storage.yml.j2
     dest: "{{ app_dir }}/config/storage.yml"
 
 - name: create database.yml
-  become_user: root
+  become: yes
   template:
     src: database.yml.j2
     dest: "{{ app_dir }}/config/database.yml"
@@ -78,21 +76,21 @@
 # system start
 # -----------------------------------------------------
 - name: start nginx
-  become_user: root
+  become: yes
   service:
     name: nginx
     state: started
   register: nginx_started
 
 - name: start puma
-  become_user: root
+  become: yes
   service:
     name: puma
     state: started
   when: nginx_started.changed
 
 - name: edit puma.service
-  become_user: root
+  become: yes
   template:
     src: puma.service.j2
     dest: /etc/systemed/system/puma.service

@@ -1,25 +1,25 @@
 ---
 - name: remove mariadb
-  become_user: root
+  become: yes
   yum:
     name: mariadb-server
     state: absent
 
 - name: remove mysql-server
-  become_user: root
+  become: yes
   yum:
     name: mysql-server
     state: absent
 
 - name: mysql install
-  become_user: root
+  become: yes
   yum:
     name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
     state: present
 
 
 - name: import GPG-Key
-  become_user: root
+  become: yes
   rpm_key:
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
