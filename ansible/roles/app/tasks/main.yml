@@ -1,10 +1,10 @@
 ---
 #インストール済みの全パッケージを最新にアップデート
-- name: yum Upgrade all packages
-  become_user: root
-  yum: 
-    name: "*"
-    state: latest
+#- name: yum Upgrade all packages
+  #become_user: root
+  #yum: 
+    #name: "*"
+    #state: latest
 
 #Rubyのインストールに必要なパッケージのインストール
 - name: yum install package
