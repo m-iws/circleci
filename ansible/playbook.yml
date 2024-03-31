@@ -1,5 +1,4 @@
 - hosts: 175.41.242.116
-  become: yes
   remote_user: ec2-user
 
   vars: 
