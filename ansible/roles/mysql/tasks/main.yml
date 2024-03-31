@@ -11,19 +11,16 @@
     name: mysql-server
     state: absent
 
-- name: install mysql rpm
-  become_user: root
-  yum:
-    name: localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm
-    state: present
-  register: mysql_installed
+- name: mysql install
+  become: true
+  command: sudo yum localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-5.noarch.rpm
 
 - name: import GPG-Key
   become_user: root
   rpm_key:
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
-  when: mysql_installed.changed
+  when: mysql install.changed
 
 - name: install mysql-community-devel and server
   become_user: root
