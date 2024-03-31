@@ -10,13 +10,13 @@
 
 - name: rbenv clone
   git:
-    repo: https://github.com/sstephenson/rbenv.git .rbenv
+    repo: https://github.com/sstephenson/rbenv.git
     dest: /home/ec2-user/.rbenv
   when: rbenv_exists is failed
 
 - name: install ruby-build
   git:
-    repo: https://github.com/sstephenson/ruby-build.git ~/.
+    repo: https://github.com/sstephenson/ruby-build.git
     dest: /home/ec2-user/.rbenv/plugins/ruby-build
 
 - name: path for rbenv01
