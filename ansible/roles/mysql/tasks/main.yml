@@ -14,7 +14,7 @@
 - name: install mysql rpm
   become_user: root
   yum:
-    name: https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm
+    name: localinstall -y https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm
     state: present
   register: mysql_installed
 
