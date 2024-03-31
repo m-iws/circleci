@@ -31,11 +31,30 @@ jobs:
             set -x
             aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test01
             aws cloudformation deploy --template-file cloudformation/02_ec2.yml --stack-name test02 --capabilities CAPABILITY_IAM
+            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test03
+            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test04
+            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test05
+      - run: 
+          name: set ELB_DNS_NAME
+          command: |
+            set -x
+            echo export AWS_ALB_DNS_NAME="$(aws cloudformation describe-stacks --stack-name test04 | jq -r '.Stacks[] | .Outputs[] | select(.OutputKey == "ALBendpoint")| .OutputValue')" >> $BASH_ENV    
+            source $BASH_ENV 
+      - run: |
+          cp $BASH_ENV bash.env
+      - persist_to_workspace:
+          root: .
+          paths:
+            - bash.env
 
   execute-ansible:
     executor: ansible/default        
     steps: 
     - checkout
+    - attach_workspace:
+        at: .
+    - run: |
+          cat bash.env >> $BASH_ENV    
     - add_ssh_keys:
         fingerprints:
           - "${KEY_FINGERPRINT}"

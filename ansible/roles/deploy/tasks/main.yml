@@ -1,0 +1,84 @@
+---
+# -----------------------------------------------------
+# app clone
+# -----------------------------------------------------
+- name: Clone sample-app
+  ansible.builtin.git:
+    repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
+    dest: "{{ app_dir }}"
+    force: yes
+  register: app_clone
+
+- name: bundle install
+  shell: bash -lc "bundle install"
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: change app permission
+  become_user: root
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: ec2-user
+    recurse: yes
+  when: app_clone.changed
+
+- name: bin/setup
+  shell: |
+    bash -lc "bin/setup"
+  args: 
+    chdir: "{{ app_dir }}"
+
+- name: asset precompile
+  shell: |
+    bash -lc "rails assets:precompile"
+  args: 
+    chdir: "{{ app_dir }}"
+# -----------------------------------------------------
+# edit file
+# -----------------------------------------------------
+- name: edit puma.service
+  become_user: root
+  template:
+    src: puma.service.j2
+    dest: /etc/systemed/system/puma.service
+
+- name: edit puma.rb
+  become_user: root
+  template:
+    src: puma.rb.j2
+    dest: "{{ app_dir }}/config/puma.rb"
+
+- name: edit development.rb
+  become_user: root
+  template:
+    src: development.rb.j2
+    dest: "{{ app_dir }}/config/environments/development.rb"
+
+- name: edit database.yml
+  become_user: root
+  template:
+    src: database.yml.j2
+    dest: "{{ app_dir }}/config/database.yml"
+
+- name: edit storage.yml
+  become_user: root
+  template:
+    src: storage.yml.j2
+    dest: "{{ app_dir }}/config/storage.yml"
+# -----------------------------------------------------
+# system start
+# -----------------------------------------------------
+- name: start nginx
+  become_user: root
+  service:
+    name: nginx
+    state: started
+  register: nginx_started
+
+- name: start puma
+  become_user: root
+  service:
+    name: puma
+    state: started
+  when: nginx_started.changed

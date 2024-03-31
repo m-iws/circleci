@@ -4,7 +4,7 @@
 
   vars: 
     app_dir: /var/www/raisetech-live8-sample-app
-
+    AWS_ALB_DNS_NAME: "{{ lookup('env','AWS_ALB_DNS_NAME') }}"
   roles:
     - { role: app, tags: app }
     - { role: rbenv, tags: rbenv }
