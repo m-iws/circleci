@@ -22,3 +22,4 @@ options[:user] ||= 'ec2-user'
 
 set :host,        options[:host_name] || host
 set :ssh_options, options
+set :path, '/sbin:/usr/local/sbin:$PATH'
