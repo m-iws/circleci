@@ -29,10 +29,16 @@
 
 - name: bundle install
   become_user: root
-  shell: bash -lc "bundle install"
+  shell: bash -lc "sudo {{ app_dir }} bundle install"
   when: app_clone.changed
   args: 
     chdir: "{{ app_dir }}"
+
+#追加テスト01（rubyが指定のバージョンでインストールされているか確認）
+describe command('ruby -v') do
+  let(:path) { '/home/ec2-user/.rbenv/shims:$PATH' }
+  its(:stdout) { should match /ruby 3.2.3/ }
+end
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
