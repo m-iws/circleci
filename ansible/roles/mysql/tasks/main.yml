@@ -25,3 +25,12 @@
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
 
+- name: install mysql-community-devel and server
+  become: yes
+  yum:
+    name:
+      - mysql-server
+      - mysql-devel
+      - mysql-community-devel
+      - mysql-community-server
+    state: present

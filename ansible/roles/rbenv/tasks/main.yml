@@ -71,7 +71,6 @@
   ignore_errors: yes
 
 - name: rails install
-  become_user: root
   gem: 
     name: rails
     version: "{{ rails_version }}"
