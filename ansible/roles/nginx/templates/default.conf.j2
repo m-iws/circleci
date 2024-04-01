@@ -1,7 +1,7 @@
 upstream puma {
   server unix:///var/www/raisetech-live8-sample-app/tmp/sockets/puma.sock;
 }
-
+  server_names_hash_bucket_size 128;
 server {
         listen 80;
         server_name  ec2-175-41-242-116.ap-northeast-1.compute.amazonaws.com;
