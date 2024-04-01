@@ -2,7 +2,7 @@
 # -----------------------------------------------------
 # yarn
 # -----------------------------------------------------
-- name: check yarn install
+- name: check yarn exists
   shell: bash -lc "yarn --version | grep {{ yarn_version }}"
   register: yarn_exists
   changed_when: no

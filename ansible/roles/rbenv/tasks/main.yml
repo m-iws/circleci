@@ -58,7 +58,7 @@
 # -----------------------------------------------------
 # rails
 # -----------------------------------------------------
-- name: check rails install
+- name: check rails_exists
   shell: bash -lc "gem list -e rails | grep {{ rails_version }}"
   register: rails_exists
   changed_when: no

@@ -29,7 +29,7 @@
 - name: bundle install
   shell: bash -lc "bundle install"
   args: 
-    chdir: "/var/www/raisetech-live8-sample-app"
+    chdir: "{{ app_dir }}"
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
@@ -80,7 +80,7 @@
 
 - name: start server
   shell: |
-    sudo systemctl restart puma
     sudo systemctl restart nginx
+    sudo systemctl restart puma
   args:
     chdir: "{{ app_dir }}"
