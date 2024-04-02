@@ -19,12 +19,9 @@
 
 - name: mysql install
   become: yes
-  ansible.builtin.get_url:
-    url: "https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch"
-    dest: "/tmp/mysql.rpm"
-    mode: '0644'
-    owner: root
-    group: root
+  yum:
+    name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
+    state: present
 
 - name: install MySQL RPM package
   become: yes
