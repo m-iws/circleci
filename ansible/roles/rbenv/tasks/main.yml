@@ -75,13 +75,6 @@
   ignore_errors: yes
 
 - name: rails install
-  gem: 
-    name: rails
-    version: "{{ rails_version }}"
-    executable: "/home/ec2-user/.rbenv/shims/gem"
-    user_install: no
-
-- name: rails install
   shell: bash -lc "gem install rails -v {{ rails_version }}""
   when: rails_exists is failed
 
