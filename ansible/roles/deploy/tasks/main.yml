@@ -34,12 +34,6 @@
     src: storage.yml.j2
     dest: "{{ app_dir }}/config/storage.yml"
 
-- name: create database.yml
-  become: yes
-  template:
-    src: database.yml.j2
-    dest: "{{ app_dir }}/config/database.yml"
-
 - name: asset precompile
   shell: |
     bash -lc "rails assets:precompile"

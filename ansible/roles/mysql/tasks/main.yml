@@ -32,3 +32,11 @@
       - mysql-community-devel
       - mysql-community-client
     state: present
+
+- name: create database.yml
+  become: yes
+  template:
+    src: database.yml.j2
+    dest: "{{ app_dir }}/config/database.yml"
+
+
