@@ -75,7 +75,7 @@
   ignore_errors: yes
 
 - name: rails install
-  shell: bash -lc "gem install rails -v {{ rails_version }}""
+  shell: bash -lc "gem install rails -v {{ rails_version }}"
   when: rails_exists is failed
 
 - name: check rails_exists2
