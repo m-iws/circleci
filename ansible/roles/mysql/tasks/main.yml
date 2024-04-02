@@ -17,17 +17,13 @@
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
-- name: mysql install
-  become: yes
+- name: Install MySQL repository
+  become_user: root
   yum:
     name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
     state: present
+  register: mysql_installed
 
-- name: install MySQL RPM package
-  become: yes
-  ansible.builtin.yum:
-    name: "/tmp/mysql.rpm"
-    state: present
 
 - name: install mysql-community-devel and server
   become: yes
