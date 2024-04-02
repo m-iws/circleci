@@ -9,5 +9,8 @@
   ignore_errors: yes
 
 - name: yarn install
-  shell: bash -lc "npm install --global yarn@{{ yarn_version }}"
+  shell: bash -lc "npm install --global yarn"
   when: yarn_exists is failed
+
+- name: Set yarn version
+  shell: bash -lc "yarn set version {{ yarn_version }}"

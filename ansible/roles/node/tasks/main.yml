@@ -9,11 +9,12 @@
   ignore_errors: yes
 
 - name: nvm install
-  ansible.builtin.shell: >
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  args:
-    creates: ~/.nvm/nvm.sh"
+  shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
   when: node_exists is failed
+
+- name: source .bashrc
+  shell: |
+    source ~/.bashrc
 
 - name: node install
   shell: bash -lc "nvm install {{ node_version }}"

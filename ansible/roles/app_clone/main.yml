@@ -1,0 +1,18 @@
+---
+# -----------------------------------------------------
+# app clone
+# -----------------------------------------------------
+- name: Create directory
+  become: yes
+  ansible.builtin.file:
+    path: /var/www
+    state: directory
+    mode: "0755"
+    owner: ec2-user
+
+- name: Clone sample-app
+  ansible.builtin.git:
+    repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
+    dest: "{{ app_dir }}"
+    force: yes
+  register: app_clone

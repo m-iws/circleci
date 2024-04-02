@@ -11,26 +11,31 @@
     name: mysql-server
     state: absent
 
-- name: mysql install
-  become: yes
-  yum:
-    name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
-    state: present
-
-
 - name: import GPG-Key
   become: yes
   rpm_key:
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
+- name: mysql install
+  become: yes
+  ansible.builtin.get_url:
+    url: "https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch"
+    dest: "/tmp/mysql.rpm"
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: install MySQL RPM package
+  become: yes
+  ansible.builtin.yum:
+    name: "/tmp/mysql.rpm"
+    state: present
 
 - name: install mysql-community-devel and server
   become: yes
   yum:
     name:
-      - mysql-server
-      - mysql-devel
       - mysql-community-devel
-      - mysql-community-server
+      - mysql-community-client
     state: present

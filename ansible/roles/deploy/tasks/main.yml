@@ -1,35 +1,18 @@
 ---
 # -----------------------------------------------------
-# app clone
+# app deploy
 # -----------------------------------------------------
-- name: Create directory
-  become: yes
-  ansible.builtin.file:
-    path: /var/www
-    state: directory
-    mode: "0755"
-    owner: ec2-user
-
-- name: Clone sample-app
-  ansible.builtin.git:
-    repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
-    dest: "{{ app_dir }}"
-    force: yes
-  register: app_clone
-
-- name: change app permission
-  become: yes
-  file:
-    path: "{{ app_dir }}"
-    state: directory
-    owner: ec2-user
-    recurse: yes
-  when: app_clone.changed
-
 - name: bundle install
   shell: bash -lc "bundle install"
   args: 
     chdir: "{{ app_dir }}"
+
+- name: bin/setup
+  shell: |
+    bash -lc "bin/setup"
+  args: 
+    chdir: "{{ app_dir }}"
+
 # -----------------------------------------------------
 # edit file
 # -----------------------------------------------------
@@ -57,30 +40,8 @@
     src: database.yml.j2
     dest: "{{ app_dir }}/config/database.yml"
 
-- name: edit puma.service
-  become: yes
-  template:
-    src: puma.service.j2
-    dest: /etc/systemd/system/puma.service
-
-- name: bin/setup
-  shell: |
-    bash -lc "bin/setup"
-  args: 
-    chdir: "{{ app_dir }}"
-
 - name: asset precompile
   shell: |
     bash -lc "rails assets:precompile"
   args: 
-    chdir: "{{ app_dir }}"
-# -----------------------------------------------------
-# system start
-# -----------------------------------------------------
-
-- name: start server
-  shell: |
-    sudo systemctl restart nginx
-    sudo systemctl restart puma
-  args:
     chdir: "{{ app_dir }}"

@@ -31,9 +31,10 @@
     line: 'eval "$(~/.rbenv/bin/rbenv init -)"'
   when: rbenv_exists is failed
 
-- name: reflect .bash_profile
-  shell: bash -lc "source ~/.bash_profile"
+- name: Execute $SHELL -l
+  shell: "exec $SHELL -l"
   when: rbenv_exists is failed
+
 # -----------------------------------------------------
 # ruby
 # -----------------------------------------------------
@@ -55,6 +56,15 @@
   shell: bash -lc "rbenv global {{ ruby_version }}"
   when: ruby_exists is failed
 
+- name: Check ruby exists2
+  shell: bash -lc "rbenv versions | grep {{ ruby_version }}"
+  register: ruby_exists
+  changed_when: no
+  ignore_errors: yes
+
+- name: Update RubyGems system
+  shell: bash -lc "gem update --system"
+
 # -----------------------------------------------------
 # rails
 # -----------------------------------------------------
@@ -70,4 +80,13 @@
     version: "{{ rails_version }}"
     executable: "/home/ec2-user/.rbenv/shims/gem"
     user_install: no
+
+- name: rails install
+  shell: bash -lc "gem install rails -v {{ rails_version }}""
   when: rails_exists is failed
+
+- name: check rails_exists2
+  shell: bash -lc "gem list -e rails | grep {{ rails_version }}"
+  register: rails_exists
+  changed_when: no
+  ignore_errors: yes

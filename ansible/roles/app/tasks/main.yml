@@ -16,8 +16,6 @@
       - make
       - gcc-c++
       - patch
-      - curl
-      - libcurl-devel
       - openssl-devel
       - libyaml-devel
       - libffi-devel
