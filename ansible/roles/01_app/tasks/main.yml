@@ -1,12 +1,11 @@
 ---
-#インストール済みの全パッケージを最新にアップデート
+
 - name: yum Upgrade all packages
   become: yes
   yum: 
     name: "*"
     state: latest
 
-#Rubyのインストールに必要なパッケージのインストール
 - name: yum install package
   become: yes
   yum:

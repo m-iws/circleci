@@ -1,7 +1,5 @@
 ---
-# -----------------------------------------------------
-# node
-# -----------------------------------------------------
+
 - name: check node install
   shell: node --version
   register: node_exists
@@ -15,6 +13,7 @@
 - name: source .bashrc
   shell: |
     source ~/.bashrc
+  when: node_exists is failed
 
 - name: node install
   shell: bash -lc "nvm install {{ node_version }}"

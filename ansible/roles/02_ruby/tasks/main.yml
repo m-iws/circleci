@@ -18,6 +18,7 @@
   git:
     repo: https://github.com/sstephenson/ruby-build.git
     dest: /home/ec2-user/.rbenv/plugins/ruby-build
+  when: rbenv_exists is failed
 
 - name: path for rbenv
   lineinfile: 
@@ -28,7 +29,7 @@
 - name: eval rbenv init
   lineinfile: 
     path: /home/ec2-user/.bash_profile
-    line: 'eval "$(~/.rbenv/bin/rbenv init -)"'
+    line: 'eval "$(rbenv init -)"'
   when: rbenv_exists is failed
 
 - name: Execute $SHELL -l
@@ -55,12 +56,6 @@
 - name: set ruby version
   shell: bash -lc "rbenv global {{ ruby_version }}"
   when: ruby_exists is failed
-
-- name: Check ruby exists2
-  shell: bash -lc "rbenv versions | grep {{ ruby_version }}"
-  register: ruby_exists
-  changed_when: no
-  ignore_errors: yes
 
 - name: Update RubyGems system
   shell: bash -lc "gem update --system"

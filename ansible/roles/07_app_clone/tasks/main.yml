@@ -16,3 +16,8 @@
     dest: "{{ app_dir }}"
     force: yes
   register: app_clone
+
+- name: bundle install
+  shell: bash -lc "bundle install"
+  args: 
+    chdir: "{{ app_dir }}"

@@ -1,11 +1,17 @@
 ---
-# -----------------------------------------------------
-# app deploy
-# -----------------------------------------------------
-- name: bundle install
-  shell: bash -lc "bundle install"
-  args: 
-    chdir: "{{ app_dir }}"
+
+- name: create database.yml
+  become: yes
+  template:
+    src: database.yml.j2
+    dest: "{{ app_dir }}/config/database.yml"
+
+- name: application.rb chenge
+  become: yes
+  template:
+    src: application.rb.j2
+    dest: "{{ app_dir }}/config/application.rb"
+
 
 - name: bin/setup
   shell: |
@@ -13,14 +19,25 @@
   args: 
     chdir: "{{ app_dir }}"
 
-# -----------------------------------------------------
-# edit file
-# -----------------------------------------------------
+
+- name: bin/dev
+  shell: |
+    bash -lc "bin/dev"
+  args: 
+    chdir: "{{ app_dir }}"
+
+- name: puma stop
+  shell: |
+    bash -lc "bundle exec rails server -d"
+  args: 
+    chdir: "{{ app_dir }}"
+
 - name: edit puma.rb
   become: yes
   template:
     src: puma.rb.j2
     dest: "{{ app_dir }}/config/puma.rb"
+
 
 - name: edit development.rb
   become: yes
@@ -33,9 +50,3 @@
   template:
     src: storage.yml.j2
     dest: "{{ app_dir }}/config/storage.yml"
-
-- name: asset precompile
-  shell: |
-    bash -lc "rails assets:precompile"
-  args: 
-    chdir: "{{ app_dir }}"

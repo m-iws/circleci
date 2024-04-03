@@ -1,6 +1,6 @@
 ---
-- name: remove mariadb
-  become: yes
+- name: remove MariaDB
+  become: true
   yum:
     name: mariadb-server
     state: absent
@@ -17,26 +17,18 @@
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
-- name: Install MySQL repository
-  become_user: root
-  yum:
-    name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
-    state: present
-  register: mysql_installed
-
+- name: download mysql RPM package
+  get_url:
+    url: "https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm"
+    dest: /tmp/mysql.rpm
 
 - name: install mysql-community-devel and server
   become: yes
   yum:
     name:
       - mysql-community-devel
-      - mysql-community-client
+      - mysql-community-server
     state: present
 
-- name: create database.yml
-  become: yes
-  template:
-    src: database.yml.j2
-    dest: "{{ app_dir }}/config/database.yml"
 
 
