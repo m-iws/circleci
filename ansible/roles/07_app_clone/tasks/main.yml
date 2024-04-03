@@ -18,7 +18,7 @@
   register: app_clone
 
 - name: webpack install
-  shell: bash -lc "npm install webpack-cli --save-dev
+  shell: bash -lc "npm install webpack-cli --save-dev"
   args: 
     chdir: "{{ app_dir }}"
 
