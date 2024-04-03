@@ -19,7 +19,7 @@
 
 - name: download mysql RPM package
   get_url:
-    url: "https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm"
+    url: "https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm"
     dest: /tmp/mysql.rpm
 
 - name: install mysql-community-devel and server
