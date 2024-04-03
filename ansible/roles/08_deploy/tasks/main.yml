@@ -23,7 +23,7 @@
   shell: |
     bash -lc "rails assets:precompile"
   args: 
-    chdir: "{{ sample_app_dir }}"
+    chdir: "{{ app_dir }}"
 
 - name: edit puma.rb
   become: yes
