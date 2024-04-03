@@ -19,18 +19,11 @@
   args: 
     chdir: "{{ app_dir }}"
 
-
-- name: bin/dev
+- name: asset precompile
   shell: |
-    bash -lc "bin/dev"
+    bash -lc "rails assets:precompile"
   args: 
-    chdir: "{{ app_dir }}"
-
-- name: puma stop
-  shell: |
-    bash -lc "bundle exec rails server -d"
-  args: 
-    chdir: "{{ app_dir }}"
+    chdir: "{{ sample_app_dir }}"
 
 - name: edit puma.rb
   become: yes
