@@ -22,13 +22,11 @@
     url: "https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm"
     dest: /tmp/mysql.rpm
 
-- name: install mysql-community-devel and server
-  become: yes
-  yum:
-    name:
-      - mysql-community-devel
-      - mysql-community-server
-    state: present
+- name: install mysql-community-devel
+  shell: bash -lc "yum install -y mysql-community-devel"
+
+- name: install mysql-community-server
+  shell: bash -lc "yum install -y mysql-community-server"
 
 
 
