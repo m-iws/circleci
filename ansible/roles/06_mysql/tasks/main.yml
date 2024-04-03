@@ -17,23 +17,24 @@
     state: present
     key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 
-- name: Download mysql rpm
-  become: yes
-  get_url:
-    url: https://dev.mysql.com/get/mysql80-community-release-el7-11.noarch.rpm
-
-- name: Install mysql rpm
+- name: Install MySQL repository
   become: yes
   yum:
-    name: /home/ec2-user/mysql80-community-release-el7-11.noarch.rpm
+    name: 'https://repo.mysql.com//mysql80-community-release-el7-11.noarch.rpm'
     state: present
 
-- name: Install mysql-community-devel and server
+
+- name: install mysql-community-client
   become: yes
   yum:
-    name:
-      - mysql-community-devel
-      - mysql-community-server
+    name: mysql-community-client
+    state: present
+
+
+- name: Install mysql-community-devel
+  become: yes
+  yum:
+    name: mysql-community-devel
     state: present
 
 
