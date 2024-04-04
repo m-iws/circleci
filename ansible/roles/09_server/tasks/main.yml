@@ -43,13 +43,15 @@
   when: nginx_exists is failed
 
 - name: reload puma.service
+  become: yes
   shell: |
-    sudo systemctl daemon-reload
+    systemctl daemon-reload
   when: nginx_exists is failed
 
 - name: reload puma.service
+  become: yes
   shell: |
-    sudo systemctl enable puma.service
+    systemctl enable puma.service
   when: nginx_exists is failed
 
 - name: Create tmp/sockets
@@ -65,6 +67,7 @@
   become: yes
   ansible.builtin.file:
     path: "{{ app_dir }}/tmp/pids/"
+    state: directory
     mode: "0755"
     owner: ec2-user
   when: nginx_exists is failed
