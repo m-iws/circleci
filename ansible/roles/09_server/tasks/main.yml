@@ -54,11 +54,6 @@
     systemctl enable puma.service
   when: nginx_exists is failed
 
-- name: Check if tmp/sockets directory exists
-  ansible.builtin.stat:
-    path: "{{ app_dir }}/tmp/sockets"
-  register: tmp_sockets_exists
-
 - name: Create tmp/sockets
   become: yes
   ansible.builtin.file:
@@ -66,12 +61,6 @@
     state: directory
     mode: "0755"
     owner: ec2-user
-  when: tmp_sockets_exists is failed
-
-- name: Check if tmp/pids/ directory exists
-  ansible.builtin.stat:
-    path: "{{ app_dir }}/tmp/pids"
-  register: tmp_pids_exists
 
 - name: Create tmp/pids
   become: yes
@@ -80,7 +69,6 @@
     state: directory
     mode: "0755"
     owner: ec2-user
-  when:  tmp_pids_exists is failed
 
 
 # -----------------------------------------------------
@@ -90,13 +78,13 @@
 - name: start server nginx
   become: yes
   shell: |
-    systemctl start nginx
+    systemctl restart nginx
   args:
     chdir: "{{ app_dir }}"
 
 - name: start server puma
   become: yes
   shell: |
-    systemctl start puma
+    systemctl restart puma
   args:
     chdir: "{{ app_dir }}"
