@@ -1,0 +1,87 @@
+---
+- name: check nginx exsits
+  shell: bash -lc "nginx -v"
+  register: nginx_exists
+  changed_when: no
+  ignore_errors: yes
+
+- name: nginx install
+  become: yes
+  shell: bash -lc "amazon-linux-extras install -y nginx1"
+  when: nginx_exists is failed
+
+- name: create default.conf
+  become: yes
+  template:
+    src: default.conf.j2
+    dest: /etc/nginx/conf.d/default.conf
+  when: nginx_exists is failed
+
+- name: nginx permission
+  become: yes
+  file: 
+    path: /var/lib
+    state: directory
+    mode: '0775'
+    recurse: yes
+  when: nginx_exists is failed
+
+- name: edit puma.service
+  become: yes
+  template:
+    src: puma.service.j2
+    dest: /etc/systemd/system/puma.service
+  when: nginx_exists is failed
+
+- name: puma permission
+  become: yes
+  file: 
+    path: /etc/systemd
+    state: directory
+    mode: '0775'
+    recurse: yes
+  when: nginx_exists is failed
+
+- name: reload puma.service
+  shell: |
+    sudo systemctl daemon-reload
+  when: nginx_exists is failed
+
+- name: reload puma.service
+  shell: |
+    sudo systemctl enable puma.service
+  when: nginx_exists is failed
+
+- name: Create tmp/sockets
+  become: yes
+  ansible.builtin.file:
+    path: "{{ app_dir }}"/tmp/sockets
+    state: directory
+    mode: "0755"
+    owner: ec2-user
+  when: nginx_exists is failed
+
+- name: Create tmp/pids/
+  become: yes
+  ansible.builtin.file:
+    path: "{{ app_dir }}"/tmp/pids/
+    mode: "0755"
+    owner: ec2-user
+  when: nginx_exists is failed
+
+
+# -----------------------------------------------------
+# system start
+# -----------------------------------------------------
+
+- name: start server nginx
+  shell: |
+    sudo systemctl start nginx
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: start server puma
+  shell: |
+    sudo systemctl start puma
+  args:
+    chdir: "{{ app_dir }}"
