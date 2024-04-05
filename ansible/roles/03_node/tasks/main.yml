@@ -5,11 +5,26 @@
   changed_when: no
   ignore_errors: yes
 
-- name: nvm install
-  become: yes
-  ansible.builtin.uri:
+- name: install nvm
+  get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
-    method: GET
+    dest: /home/ec2-user/install_nvm.sh
+    mode: '0775'
+  when: node_exists is failed
+
+- name: run nvm installation script
+  command: /bin/bash /home/ec2-user/install_nvm.sh
+  args:
+    creates: /home/ec2-user/.nvm
+  when: node_exists is failed
+
+- name: load nvm script
+  shell: |
+    export NVM_DIR="/home/ec2-user/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This Loads nvm
+  args:
+    executable: /bin/bash
+  when: node_exists is failed
 
 
 #- name: nvm install
