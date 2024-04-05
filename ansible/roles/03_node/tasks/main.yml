@@ -5,11 +5,12 @@
   changed_when: no
   ignore_errors: yes
 
- name: nvm install
+- name: nvm install
+  become: yes
   ansible.builtin.uri:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
     method: GET
-    creates: ~/.nvm/nvm.sh
+
 
 #- name: nvm install
   #shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
