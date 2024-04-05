@@ -38,7 +38,7 @@ Resources:
           FromPort: 3000
           ToPort: 3000
           CidrIp: 0.0.0.0/0
-        # 費用をかけないため今回は全開放で作成
+        # Circleci無料使用のため今回は全開放で作成
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22

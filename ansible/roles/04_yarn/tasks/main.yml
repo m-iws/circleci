@@ -1,5 +1,4 @@
 ---
-
 - name: check yarn exists
   shell: bash -lc "yarn --version | grep {{ yarn_version }}"
   register: yarn_exists

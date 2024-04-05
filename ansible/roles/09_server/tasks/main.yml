@@ -31,7 +31,6 @@
   template:
     src: puma.service.j2
     dest: /etc/systemd/system/puma.service
-  when: nginx_exists is failed
 
 - name: puma permission
   become: yes
@@ -40,21 +39,18 @@
     state: directory
     mode: '0775'
     recurse: yes
-  when: nginx_exists is failed
 
 - name: reload puma.service
   become: yes
   shell: |
     systemctl daemon-reload
-  when: nginx_exists is failed
 
 - name: reload puma.service
   become: yes
   shell: |
     systemctl enable puma.service
-  when: nginx_exists is failed
 
-- name: Create tmp/sockets
+- name: create tmp/sockets
   become: yes
   ansible.builtin.file:
     path: "{{ app_dir }}/tmp/sockets"
@@ -62,7 +58,7 @@
     mode: "0755"
     owner: ec2-user
 
-- name: Create tmp/pids
+- name: create tmp/pids
   become: yes
   ansible.builtin.file:
     path: "{{ app_dir }}/tmp/pids"
@@ -70,19 +66,14 @@
     mode: "0755"
     owner: ec2-user
 
-
-# -----------------------------------------------------
-# system start
-# -----------------------------------------------------
-
-- name: start server nginx
+- name: restart server nginx
   become: yes
   shell: |
     systemctl restart nginx
   args:
     chdir: "{{ app_dir }}"
 
-- name: start server puma
+- name: restart server puma
   become: yes
   shell: |
     systemctl restart puma

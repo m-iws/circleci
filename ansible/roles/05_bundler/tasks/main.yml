@@ -1,8 +1,5 @@
 ---
-# -----------------------------------------------------
-# bundler
-# -----------------------------------------------------
-- name: check bundler install
+- name: check bundler exists
   shell: bash -lc "bundler version | grep {{ bundler_version }}"
   register: bundler_exists
   changed_when: no

@@ -1,14 +1,20 @@
 ---
-
-- name: check node install
+- name: check node exists
   shell: node --version
   register: node_exists
   changed_when: no
   ignore_errors: yes
 
 - name: nvm install
-  shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
+  uri:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
+    method: GET
   when: node_exists is failed
+
+
+#- name: nvm install
+  #shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
+  #when: node_exists is failed
 
 - name: source .bashrc
   shell: |

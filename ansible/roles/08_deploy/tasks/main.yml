@@ -1,12 +1,11 @@
 ---
-
 - name: create database.yml
   become: yes
   template:
     src: database.yml.j2
     dest: "{{ app_dir }}/config/database.yml"
 
-- name: application.rb chenge
+- name: edit application.rb
   become: yes
   template:
     src: application.rb.j2
@@ -30,7 +29,6 @@
   template:
     src: puma.rb.j2
     dest: "{{ app_dir }}/config/puma.rb"
-
 
 - name: edit development.rb
   become: yes

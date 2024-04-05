@@ -1,8 +1,5 @@
 ---
-# -----------------------------------------------------
-# rbenv
-# -----------------------------------------------------
-- name: check rbenv install
+- name: check rbenv exists
   shell: bash -lc "rbenv --version"
   register: rbenv_exists
   changed_when: no
@@ -32,14 +29,12 @@
     line: 'eval "$(rbenv init -)"'
   when: rbenv_exists is failed
 
-- name: Execute $SHELL -l
+- name: execute $SHELL -l
   shell: "exec $SHELL -l"
   when: rbenv_exists is failed
 
-# -----------------------------------------------------
-# ruby
-# -----------------------------------------------------
-- name: Check ruby exists
+
+- name: check ruby exists
   shell: bash -lc "rbenv versions | grep {{ ruby_version }}"
   register: ruby_exists
   changed_when: no
