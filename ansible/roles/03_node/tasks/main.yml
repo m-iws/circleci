@@ -6,20 +6,24 @@
   ignore_errors: yes
 
 - name: nvm install
-  uri:
-    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
-    method: GET
+  ansible.builtin.shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  args:
+    creates: ~/.nvm/nvm.sh"
   when: node_exists is failed
 
+- name: use nvm
+  shell: bash -lc "source ~/.nvm/nvm.sh"
+  when: node_exists is failed
 
 #- name: nvm install
   #shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
   #when: node_exists is failed
 
-- name: source .bashrc
-  shell: |
-    source ~/.bashrc
-  when: node_exists is failed
+#- name: source .bashrc
+  #shell: |
+    #source ~/.bashrc
+  #when: node_exists is failed
 
 - name: node install
   shell: bash -lc "nvm install {{ node_version }}"
