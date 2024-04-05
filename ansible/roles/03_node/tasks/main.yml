@@ -5,31 +5,18 @@
   changed_when: no
   ignore_errors: yes
 
-- name: install nvm
+- name: nvm script download
   get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
-    dest: /home/ec2-user/install_nvm.sh
+    dest: /home/ec2-user/nvm.sh
     mode: '0775'
   when: node_exists is failed
 
-- name: run nvm installation script
-  command: /bin/bash /home/ec2-user/install_nvm.sh
+- name: nvm install
+  command: /bin/bash /home/ec2-user/nvm.sh
   args:
-    creates: /home/ec2-user/.nvm
+    creates: /home/ec2-user/nvm.sh
   when: node_exists is failed
-
-- name: load nvm script
-  shell: |
-    export NVM_DIR="/home/ec2-user/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This Loads nvm
-  args:
-    executable: /bin/bash
-  when: node_exists is failed
-
-
-#- name: nvm install
-  #shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
-  #when: node_exists is failed
 
 - name: source .bashrc
   shell: |
