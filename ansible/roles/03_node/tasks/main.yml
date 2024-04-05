@@ -8,14 +8,14 @@
 - name: nvm script download
   get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
-    dest: /home/ec2-user/nvm.sh
+    dest: /home/ec2-user/nvm_install.sh
     mode: '0775'
   when: node_exists is failed
 
 - name: nvm install
   command: /bin/bash /home/ec2-user/nvm.sh
   args:
-    creates: /home/ec2-user/nvm.sh
+    creates: /home/ec2-user/nvm_install.sh
   when: node_exists is failed
 
 - name: source .bashrc
