@@ -1,0 +1,124 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture13_ec2_setting
+
+Parameters: 
+  NameBase:
+    Description: this is base name.
+    Type: String
+    Default: lecture13
+  StackNameVPC:
+    Description: vpc stack name.
+    Type: String
+    Default: test01
+  EC2KeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instance
+    Type: "AWS::EC2::KeyPair::KeyName"
+    Default: circleci13
+  AZ1:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: ap-northeast-1a
+    
+Resources: 
+# ------------------------------------------------------------#
+#  SecurityGroup
+# ------------------------------------------------------------#
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub ${NameBase}-sg-ec2 created
+      GroupName: !Sub ${NameBase}-sg-ec2
+      VpcId:
+        Fn::ImportValue: !Sub ${StackNameVPC}-VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+        # Circleci無料使用のため今回は全開放で作成
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-sg-ec2
+# ------------------------------------------------------------#
+#  EC2Instance
+# ------------------------------------------------------------#
+  EC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref EC2KeyName
+      ImageId: ami-05b37ce701f85f26a
+      InstanceType: t2.micro
+      SecurityGroupIds: 
+        - !Ref EC2SecurityGroup
+      SubnetId:
+        Fn::ImportValue: !Sub ${StackNameVPC}-PublicSubnet1-${AZ1}-ID
+    # NetworkInterfaces: 
+    #    - AssociatePublicIpAddress: "true"
+    #      DeviceIndex: "0"
+    #      GroupSet:
+    #        - !Ref EC2SecurityGroup
+    #      SubnetId:
+    #        Fn::ImportValue: !Sub ${StackNameVPC}-PublicSubnet1-${AZ1}-ID
+      UserData: !Base64 |  
+        #! /bin/bash
+        sudo yum -y update 
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-ec2
+# ------------------------------------------------------------#
+#  ErasticIP
+# ------------------------------------------------------------#
+  ElasticIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: eipalloc-00123976b8843ab78
+      InstanceId: !Ref EC2
+
+
+# ------------------------------------------------------------#
+#  IAMRole
+# ------------------------------------------------------------#
+  S3AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement: 
+          - 
+            Effect: Allow
+            Principal: 
+              Service: 
+                - ec2.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Path: / 
+      ManagedPolicyArns:
+           - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-S3AccessRole
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+      - !Ref S3AccessRole
+
+Outputs:
+  EC2SecurityGroup:
+    Value: !Ref EC2SecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-sg-ec2-ID
+  EC2:
+    Value: !Ref EC2
+    Export:
+      Name: !Sub ${AWS::StackName}-ec2-ID

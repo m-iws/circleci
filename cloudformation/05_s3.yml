@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture13_s3_setting
+
+Parameters: 
+  NameBase:
+    Description: this is base name.
+    Type: String
+    Default: lecture13
+
+Resources: 
+# ------------------------------------------------------------#
+#  S3
+# ------------------------------------------------------------#
+  S3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: s3-lecture13
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      VersioningConfiguration: 
+        Status: Suspended
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      Tags:
+        - Key: Name
+          Value: !Sub ${NameBase}-s3

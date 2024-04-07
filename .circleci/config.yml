@@ -1,0 +1,98 @@
+version: 2.1
+orbs:
+  python: circleci/python@2.0.3
+  aws-cli: circleci/aws-cli@3.1.5
+  ansible: orbss/ansible-playbook@0.0.5
+  ruby: circleci/ruby@2.0.0
+
+
+jobs:
+  cfn-lint:
+    executor: python/default
+    steps:
+      - checkout
+      - run: pip install cfn-lint
+      - run:
+          name: run cfn-lint
+          command: |
+            cfn-lint -i W3002 -t cloudformation/*.yml
+
+  execute-cfn:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_DEFAULT_REGION
+      - run:
+          name: cloudformation deploy
+          command: |
+            set -x
+            aws cloudformation deploy --template-file cloudformation/01_vpc.yml --stack-name test01
+            aws cloudformation deploy --template-file cloudformation/02_ec2.yml --stack-name test02 --capabilities CAPABILITY_IAM
+            aws cloudformation deploy --template-file cloudformation/03_rds.yml --stack-name test03
+            aws cloudformation deploy --template-file cloudformation/04_elb.yml --stack-name test04
+            aws cloudformation deploy --template-file cloudformation/05_s3.yml --stack-name test05
+      - run: 
+          name: set ELB_DNS_NAME
+          command: |
+            set -x
+            echo export AWS_ALB_DNS_NAME="$(aws cloudformation describe-stacks --stack-name test04 | jq -r '.Stacks[] | .Outputs[] | select(.OutputKey == "ALBendpoint")| .OutputValue')" >> $BASH_ENV    
+            source $BASH_ENV 
+      - run: |
+          cp $BASH_ENV bash.env
+      - persist_to_workspace:
+          root: .
+          paths:
+            - bash.env
+
+  execute-ansible:
+    executor: ansible/default        
+    steps: 
+    - checkout
+    - attach_workspace:
+        at: .
+    - run: |
+          cat bash.env >> $BASH_ENV    
+    - add_ssh_keys:
+        fingerprints:
+          - "${KEY_FINGERPRINT}"
+    - ansible/install:
+        version: 2.10.7
+    - ansible/playbook: 
+        playbook: ansible/playbook.yml
+        playbook-options: "-i ansible/inventory"
+  
+  execute-serverspec:
+    executor: ruby/default
+    steps:
+      - checkout
+      # サーバーのセットアップ
+      - run:
+          name: bundle install
+          command: |
+            cd serverspec
+            gem list -e rails
+            bundle install --path vendor/bundle
+
+      # Serverspecのテストを実行
+      - run:
+          name: execute serverspec
+          command: |
+            cd serverspec
+            bundle exec rake spec
+
+workflows:
+  lecture13:
+    jobs:
+      - cfn-lint
+      - execute-cfn:
+          requires:
+            - cfn-lint
+      - execute-ansible:
+          requires:
+            - execute-cfn
+      - execute-serverspec:
+          requires:
+            - execute-ansible
