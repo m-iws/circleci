@@ -1,15 +1,53 @@
-# 第13回課題
+# RailsアプリケーションのAWSインフラ環境をCircleci+Ansibleで自動構築した<!-- omit in toc -->
 
-- CircleCI のサンプルに ServerSpec や Ansible の処理を追加してください。
-- Ansible はいきなりやりたいことを実装するのではなく、最低限の「必ず成功する Playbook」を用意して徐々に仕事を追加しましょう。
+## 目次<!-- omit in toc -->
+
+- [実施概要](#実施概要)
+- [開発環境](#開発環境)
+- [使用ツール](#使用ツール)
+- [事前設定](#事前設定)
+- [各ツールの設定](#各ツールの設定)
+  - [CloudFormationの設定](#cloudformationの設定)
+  - [Ansibleの設定](#ansibleの設定)
+  - [ServerSpecの設定](#serverspecの設定)
+- [Circleciの実行結果を確認](#circleciの実行結果を確認)
+- [反省点](#反省点)
 
 ---
 
 ## 実施概要
 
-Raisetechより提供されたCRUD 処理が出来るRailsアプリケーションを稼働させるインフラストラクチャを自動構築する。  
+- AWSのリソースをCircleci+Ansibleで自動構築した
+- 今回はインフラの自動構築を目標とするため、既存のCRUD処理が出来る簡単なRailsアプリケーションを利用した
+<img width="450" src=images/構成図.png><br>
 
-使用ツールは下記の通り。
+**EC2**  
+
+- 今回は学習コストを抑えるため1台構成とした
+- EIPを使用して利便性を高めた
+
+**RDS**  
+
+- 今回は学習コストを抑えるためシングルAZ構成とした
+- トラフィックはEC2にアサインしたセキュリティグループのみを許可する設定とした
+
+**ELB**  
+
+- EC2の前に設置し、受信したHTTP/HTTPSトラフィックをEC2へルーティングさせる
+- アプリケーションの拡張性と可用性を考慮しALBを選択した
+
+**S3**  
+
+- アプリケーションの画像保存先として使用することで、データの可用性と耐久性を確保した
+
+---
+
+## 開発環境
+
+- Ubuntu(Windows 11 Home/WSL2)
+- VScode
+
+## 使用ツール
 
 **CircleCI**  
 
@@ -17,33 +55,29 @@ Raisetechより提供されたCRUD 処理が出来るRailsアプリケーショ�
 - Ansibleの実行
 - ServerSpecの実行
 
-**CloudFormation** 
+**CloudFormation**  
 
-- VPC、EC2、RDS、ELB、S3を作成（詳細は構成図に記載）
+- VPC、EC2、RDS、ELB、S3を作成（詳細は上記構成図に記載）
 
-**Ansible**
+**Ansible**  
 
 - Railsアプリケーション用の環境構築を行う
 
-**ServerSpec**
+**ServerSpec**  
 
-- Railsアプリケーションのレスポンスを確認
-
----
-## 構成図
-
-![構成図](images/構成図.png)
+- Railsアプリケーションのレスポンスを確認する
 
 ---
 
 ## 事前設定
-必要な環境変数はCircleCIの `Environment Variables` に登録しておく。 
 
-![Environment Variables](images/01.png)
+必要な環境変数はCircleCIの `Environment Variables` に登録することで、コード変更を不要とした。
+
+<img width="450" src=images/01.png>
 
 ---
 
-## 手順
+## 各ツールの設定
 
 1. CloudFormationの設定
 2. Ansibleの設定
@@ -55,23 +89,32 @@ Raisetechより提供されたCRUD 処理が出来るRailsアプリケーショ�
 
 ### CloudFormationの設定
 
-[CloudFormationのテンプレート](cloudformation)は第10回課題で作成したデータを一部修正して使用（利便性向上のためElasticIPをEC2に割り当てる設定へ修正）。<br>
+---
+
+詳細は[CloudFormationのテンプレート](cloudformation)を参照。<br>
 AWS CLIを用いてCloudFormationを実行する設定を[config.yml](.circleci/config.yml)に追加。  
 
 ---
 
 ### Ansibleの設定
+
+---
+
 [config.yml](.circleci/config.yml)にAnsibleのplaybook.ymlを実行する設定を追加。（[Ansibleの設定ファイル](ansible)）
 
 ---
 
 ### ServerSpecの設定
 
-第11回で作成したServerSpecのテストスクリプトを実行する設定を[config.yml](.circleci/config.yml)に追加。
+---
+
+ServerSpecのテストスクリプトを実行する設定を[config.yml](.circleci/config.yml)に追加。
 
 ---
 
-### Circleciの実行結果を確認
+## Circleciの実行結果を確認
+
+---
 
 1. 結果一覧<br>![全結果](images/02.png)
 2. cfn-lintの結果<br>![cfn-lint](images/03.png)
@@ -81,22 +124,7 @@ AWS CLIを用いてCloudFormationを実行する設定を[config.yml](.circleci/
 
 ---
 
-### Railsアプリケーションの動作確認
+## 反省点
 
-1. ALBのDNS名でアクセスし、画像の保存が成功することを確認<br>![画像の保存成功](images/07.png)
-2. S3へ画像が保存出来ていることを確認<br>![S3への保存成功](images/08.png)
-
----
-
-## 苦労したところ
-
-- Railsアプリケーション更新への対応<br>
-課題の進行途中でRaisetechから提供されているサンプルアプリケーションが更新され`unicorn+nginx`の構成から`puma+nginx`の構成での起動へ仕様変更されたので環境構築方法の確認からやり直す事になった。<br>
-一つ一つエラーログを見ながら対応したが、Railsアプリケーションへの理解が足りていないことを実感した。
-
----
-
-## 今後への課題・やってみたい事
-SAAの資格取得が優先されるが今後の課題を記載した。
-- Railsの学習をし理解を深めたい
+- 一つ一つエラーログを見ながら対応したが、Railsアプリケーションへの理解が足りていないことを実感した。今後はRailsの学習をし理解を深めたい。
 - アプリのリクエストがhttp通信でセキュリティ上問題があるためhttps通信へリダイレクトするよう変更したい
